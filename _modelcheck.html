@@ -1,0 +1,68 @@
+<!doctype html>
+<!-- Temporary development page for eyeballing procedural models.
+     /_modelcheck.html            → grid of every model
+     /_modelcheck.html?model=key  → one model from six angles -->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>Model check</title>
+<link rel="stylesheet" href="/assets/css/main.css">
+<style>
+  body { padding: 20px; }
+  .mgrid { display: grid; grid-template-columns: repeat(var(--cols, 5), 1fr); gap: 14px; }
+  .mcell { border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; background: var(--bg-elev); }
+  .mstage { aspect-ratio: 1/1; position: relative; }
+  .mstage canvas { width: 100% !important; height: 100% !important; }
+  .mlabel { font-family: var(--font-mono); font-size: 11px; padding: 8px 10px; border-top: 1px solid var(--line); color: var(--fg-muted); }
+</style>
+</head>
+<body>
+<div class="mgrid" id="grid"></div>
+
+<script type="module">
+import { MODEL_KEYS, preloadModels } from "/assets/js/lib/models.js";
+import { tileEngine } from "/assets/js/scenes/tiles.js";
+
+await preloadModels();
+
+const grid = document.getElementById("grid");
+const single = new URLSearchParams(location.search).get("model");
+const engine = tileEngine();
+
+function cell(label) {
+  const wrap = document.createElement("div");
+  wrap.className = "mcell";
+  const stage = document.createElement("div");
+  stage.className = "mstage";
+  const cap = document.createElement("div");
+  cap.className = "mlabel";
+  cap.textContent = label;
+  wrap.append(stage, cap);
+  grid.append(wrap);
+  return stage;
+}
+
+if (single) {
+  grid.style.setProperty("--cols", 3);
+  const angles = [
+    ["front", [0, 0, 0]],
+    ["yaw 45", [0, Math.PI / 4, 0]],
+    ["side (yaw 90)", [0, Math.PI / 2, 0]],
+    ["back", [0, Math.PI, 0]],
+    ["yaw 270", [0, -Math.PI / 2, 0]],
+    ["top-down", [-Math.PI / 2.6, 0.4, 0]],
+  ];
+  for (const [label, rot] of angles) {
+    engine.addTile(cell(`${single} — ${label}`), single, {
+      spin: 0, tilt: 0, bob: 0, distance: 4.1, rotation: rot,
+    });
+  }
+} else {
+  grid.style.setProperty("--cols", 5);
+  for (const key of MODEL_KEYS) {
+    engine.addTile(cell(key), key, { spin: 0, tilt: 0, bob: 0, distance: 4.3 });
+  }
+}
+</script>
+</body>
+</html>

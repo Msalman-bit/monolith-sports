@@ -1,0 +1,19 @@
+{
+  "name": "monolith-sports",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Corporate export website for a Sialkot-based sports goods manufacturer selling into the European Union.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1",
+    "vite": "^7.1.5"
+  }
+}

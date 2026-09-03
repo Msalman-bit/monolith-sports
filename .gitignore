@@ -1,0 +1,10 @@
+node_modules/
+dist/
+shot-*.png
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+.vite/
+monolith-sports/

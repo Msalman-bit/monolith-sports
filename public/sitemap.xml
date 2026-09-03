@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.monolithsports.example/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.monolithsports.example/products.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.monolithsports.example/oem.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.monolithsports.example/export.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.monolithsports.example/quality.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.monolithsports.example/manufacturing.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.monolithsports.example/about.html</loc><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.monolithsports.example/sustainability.html</loc><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.monolithsports.example/insights.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.monolithsports.example/faq.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.monolithsports.example/quote.html</loc><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.monolithsports.example/contact.html</loc><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.monolithsports.example/careers.html</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://www.monolithsports.example/product.html?id=apex-pro-match</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=heritage-32</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=vector-futsal</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=ridge-rugby</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=court-volley</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=titan-boxing-glove</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=cipher-mma-glove</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=anvil-heavy-bag</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=sovereign-willow</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=redline-cricket-ball</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=meridian-hockey-stick</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=keeper-elite-glove</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=bastion-shin-guard</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=forge-kettlebell</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=axis-dumbbell</loc><priority>0.6</priority></url>
+  <url><loc>https://www.monolithsports.example/product.html?id=gridline-agility</loc><priority>0.6</priority></url>
+</urlset>
