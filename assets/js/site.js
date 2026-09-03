@@ -194,13 +194,7 @@ function buildFooter() {
 
       <div class="footer__bottom">
         <span>© <span data-year></span> ${COMPANY.legalName}. All rights reserved.</span>
-        <nav class="footer__legal" aria-label="Legal">
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Terms</a>
-          <a href="export.html#compliance">Compliance</a>
-          <span>NTN ${COMPANY.registration.ntn}</span>
-          <span>EORI ${COMPANY.registration.eori}</span>
-        </nav>
+        <p class="footer__credit">Designed and developed by Salman Goraya</p>
       </div>
     </div>
   </footer>`;

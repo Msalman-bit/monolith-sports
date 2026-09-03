@@ -3406,6 +3406,15 @@ html[data-theme="light"] .cta__bg {
   color: var(--fg);
 }
 
+.footer__credit {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--fg-muted);
+}
+
 .footer__wordmark {
   display: none;
 }
