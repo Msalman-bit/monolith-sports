@@ -155,7 +155,8 @@ function buildFooter() {
         <div class="footer__col">
           <span class="footer__heading">Company</span>
           <a href="about.html">About us</a>
-          <a href="manufacturing.html">Manufacturing</a>
+          <a href="transport.html">Transport</a>
+          <a href="manufacturing.html">Manufacturing process</a>
           <a href="quality.html">Quality &amp; certification</a>
           <a href="sustainability.html">Sustainability</a>
           <a href="oem.html">OEM &amp; private label</a>
@@ -194,7 +195,10 @@ function buildFooter() {
 
       <div class="footer__bottom">
         <span>© <span data-year></span> ${COMPANY.legalName}. All rights reserved.</span>
-        <p class="footer__credit">Designed and developed by Salman Goraya</p>
+        <p class="footer__credit" data-credit>
+          <span class="footer__credit-label">Designed and developed</span>
+          <span class="footer__credit-name">Salman Goraya</span>
+        </p>
       </div>
     </div>
   </footer>`;
@@ -821,6 +825,69 @@ function initSideIndex() {
   sections.forEach((section) => observer.observe(section));
 }
 
+/* ---------------------------------------------------------- Footer credit */
+function initCredit() {
+  const el = $("[data-credit]");
+  if (!el) return;
+
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) {
+    el.classList.add("is-in");
+    return;
+  }
+
+  const host = el.closest(".footer__bottom") || el;
+  let inView = false;
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const atEnd = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    return max <= 0 || window.scrollY >= max - 32;
+  };
+
+  const sync = () => {
+    ticking = false;
+    const y = window.scrollY;
+    const dy = y - lastY;
+    lastY = y;
+
+    if (atEnd()) {
+      el.classList.add("is-in");
+      return;
+    }
+    if (!inView) {
+      el.classList.remove("is-in");
+      return;
+    }
+    if (dy >= 0) {
+      el.classList.add("is-in");
+      return;
+    }
+    if (dy < -6) el.classList.remove("is-in");
+  };
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      inView = entries.some((entry) => entry.isIntersecting);
+      sync();
+    },
+    { threshold: [0, 0.15, 0.4] }
+  );
+  io.observe(host);
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(sync);
+    },
+    { passive: true }
+  );
+  sync();
+}
+
 /* -------------------------------------------------------------- Preloader */
 function initPreloader() {
   const pre = $("[data-preloader]");
@@ -900,6 +967,7 @@ function boot() {
   initForms();
   initCatDock();
   initSideIndex();
+  initCredit();
   initPreloader();
   initGraphics();
 }

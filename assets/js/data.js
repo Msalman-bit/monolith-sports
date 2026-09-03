@@ -43,12 +43,13 @@ export const NAV = [
     href: "about.html",
     children: [
       { label: "About Us", href: "about.html", code: "01", desc: "Three decades of Sialkot craft." },
-      { label: "Manufacturing", href: "manufacturing.html", code: "02", desc: "Facilities, lines and capacity." },
+      { label: "Transport", href: "transport.html", code: "02", desc: "Sialkot to Rotterdam, GSP+ and freight." },
       { label: "Sustainability", href: "sustainability.html", code: "03", desc: "Ethics, environment, Atlanta Agreement." },
       { label: "Insights", href: "insights.html", code: "04", desc: "Trade notes and EU regulation updates." },
       { label: "Careers", href: "careers.html", code: "05", desc: "Join the floor or the front office." },
     ],
   },
+  { label: "Manufacturing process", href: "manufacturing.html" },
   {
     label: "Products",
     href: "products.html",

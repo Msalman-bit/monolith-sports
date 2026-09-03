@@ -1279,6 +1279,8 @@ html[data-theme="light"] .header::after {
 }
 
 .header__inner {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: var(--shell);
   margin-inline: auto;
@@ -1291,6 +1293,8 @@ html[data-theme="light"] .header::after {
 
 /* Wordmark */
 .brand {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -1577,6 +1581,7 @@ body.menu-open .burger__lines i:nth-child(3) {
   overflow-y: auto;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transform: translateY(-1.5%);
   transition: opacity 0.4s var(--ease), transform 0.5s var(--ease), visibility 0.4s;
 }
@@ -1584,6 +1589,7 @@ body.menu-open .burger__lines i:nth-child(3) {
 body.menu-open .drawer {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
   transform: none;
 }
 
@@ -1819,6 +1825,35 @@ body.menu-open .drawer {
   justify-content: center;
 }
 
+.hero .btn--ghost,
+.header .header__cta,
+.cta .btn--ghost,
+html[data-theme="light"] .header .btn.header__cta,
+html[data-theme="light"] .cta .btn.btn--ghost {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.77) 0%,
+    rgba(255, 255, 255, 0.62) 100%
+  );
+  color: #111111;
+  box-shadow:
+    0 8px 22px -12px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px) saturate(160%) brightness(1.18);
+  backdrop-filter: blur(2px) url(#lg-pill) saturate(165%) brightness(1.22);
+  -webkit-backdrop-filter: blur(8px) saturate(160%) brightness(1.18);
+}
+
+.hero .btn--ghost.is-liquid,
+.header .header__cta.is-liquid,
+.cta .btn--ghost.is-liquid,
+html[data-theme="light"] .header .btn.header__cta.is-liquid,
+html[data-theme="light"] .cta .btn.btn--ghost.is-liquid {
+  backdrop-filter: blur(2px) url(#lg-pill-liq) saturate(175%) brightness(1.26);
+  -webkit-backdrop-filter: blur(8px) saturate(175%) brightness(1.26);
+}
+
 .hero__scroll {
   position: absolute;
   bottom: 1.6rem;
@@ -1870,6 +1905,7 @@ body.menu-open .drawer {
 /* Page hero (interior pages) */
 .page-hero {
   position: relative;
+  z-index: 0;
   padding-top: calc(var(--header-h) + clamp(3.5rem, 8vw, 7rem));
   padding-bottom: clamp(2.5rem, 6vw, 5rem);
   border-bottom: 1px solid var(--line);
@@ -1880,12 +1916,18 @@ body.menu-open .drawer {
   position: absolute;
   inset: 0;
   z-index: 0;
+  pointer-events: none;
   opacity: 0.5;
   background-image: linear-gradient(var(--line-soft) 1px, transparent 1px),
     linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(ellipse 90% 70% at 70% 0%, #000 10%, transparent 75%);
   -webkit-mask-image: radial-gradient(ellipse 90% 70% at 70% 0%, #000 10%, transparent 75%);
+}
+
+.page-hero > .shell {
+  position: relative;
+  z-index: 1;
 }
 
 .page-hero__inner {
@@ -1911,6 +1953,8 @@ body.menu-open .drawer {
 }
 
 .breadcrumb {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -3407,12 +3451,55 @@ html[data-theme="light"] .cta__bg {
 }
 
 .footer__credit {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.75rem;
   margin: 0;
-  font-family: var(--font-body);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.01em;
-  text-transform: none;
-  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer__credit.is-in {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.footer__credit-label,
+.footer__credit-name {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+}
+
+.footer__credit-name::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 1px;
+  margin-right: 0.7rem;
+  margin-bottom: 0.2em;
+  vertical-align: middle;
+  background: var(--line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__credit {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition: none;
+  }
 }
 
 .footer__wordmark {
