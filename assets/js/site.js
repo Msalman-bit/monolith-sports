@@ -426,15 +426,27 @@ function initNav() {
   const header = $("[data-header]");
   const progress = $("[data-progress]");
   let lastY = window.scrollY;
+  let hideArmed = false;
+
+  const syncChromeHeight = () => {
+    if (!header) return;
+    const height = Math.ceil(header.getBoundingClientRect().height);
+    if (height > 0) {
+      document.documentElement.style.setProperty("--chrome-h", `${height}px`);
+    }
+  };
 
   const onScroll = () => {
     const y = window.scrollY;
     header?.classList.toggle("is-stuck", y > 12);
 
-    const goingDown = y > lastY && y > 320;
-    header?.classList.toggle("is-hidden", goingDown);
-    if (goingDown) closeMenus();
+    if (hideArmed) {
+      const goingDown = y > lastY && y > 320;
+      header?.classList.toggle("is-hidden", goingDown);
+      if (goingDown) closeMenus();
+    }
     lastY = y;
+    syncChromeHeight();
 
     if (progress) {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -442,7 +454,21 @@ function initNav() {
     }
   };
 
+  const openFromHeader = () => {
+    header?.classList.remove("is-hidden");
+    if (!location.hash) window.scrollTo(0, 0);
+    syncChromeHeight();
+  };
+
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", syncChromeHeight, { passive: true });
+  window.visualViewport?.addEventListener("resize", syncChromeHeight, { passive: true });
+  window.addEventListener("pageshow", openFromHeader);
+  openFromHeader();
+  requestAnimationFrame(() => {
+    syncChromeHeight();
+    hideArmed = true;
+  });
   onScroll();
 }
 

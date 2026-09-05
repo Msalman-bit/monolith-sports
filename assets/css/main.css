@@ -57,9 +57,10 @@
   /* Structure */
   --shell: 1420px;
   --gutter: clamp(1.15rem, 4vw, 4.5rem);
+  --safe-t: env(safe-area-inset-top, 0px);
   --header-h: 76px;
   --nav-dock-h: 56px;
-  --chrome-h: calc(var(--header-h) + var(--nav-dock-h));
+  --chrome-h: calc(var(--header-h) + var(--nav-dock-h) + var(--safe-t));
 
   /* Corner radii — Apple-style softness */
   --r-xs: 8px;
@@ -150,7 +151,7 @@ html[data-theme="light"] {
 @media (min-width: 680px) {
   :root {
     --nav-dock-h: 0px;
-    --chrome-h: var(--header-h);
+    --chrome-h: calc(var(--header-h) + var(--safe-t));
   }
 }
 
@@ -1206,7 +1207,8 @@ html[data-theme="light"] .viewer {
   inset: 0 0 auto 0;
   z-index: 900;
   height: auto;
-  min-height: var(--header-h);
+  min-height: calc(var(--header-h) + var(--safe-t));
+  padding-top: var(--safe-t);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -1605,7 +1607,7 @@ html[data-theme="light"] .nav__panel {
 
 @media (min-width: 680px) {
   .header {
-    height: var(--header-h);
+    height: calc(var(--header-h) + var(--safe-t));
     flex-direction: row;
     align-items: center;
   }
@@ -2004,6 +2006,16 @@ body.menu-open .drawer {
   padding-top: calc(var(--chrome-h) + 3rem);
   padding-bottom: clamp(3rem, 6vw, 5rem);
   overflow: hidden;
+}
+
+@media (max-width: 679px) {
+  .hero {
+    padding-top: calc(var(--chrome-h) + 0.7rem);
+  }
+
+  .page-hero {
+    padding-top: calc(var(--chrome-h) + 1.35rem);
+  }
 }
 
 .hero__canvas {
