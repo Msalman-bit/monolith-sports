@@ -7,7 +7,6 @@
 import * as THREE from "three";
 import {
   Stage,
-  pinProgress,
   pointer,
   clamp,
   damp,
@@ -25,11 +24,12 @@ export function initShowcase(section) {
 
   const mount = section.querySelector("[data-scene-canvas]");
   const sticky = section.querySelector(".scrollscene__sticky");
-  addLeadSpacers(section);
   const steps = Array.from(section.querySelectorAll(".scrollstep[data-model]"));
   const bar = section.querySelector(".scrollscene__bar i");
   const counter = section.querySelector("[data-scene-counter]");
   if (!mount || steps.length === 0) return null;
+
+  const cards = pinCards(sticky, steps);
 
   const entries = steps.map((step) => ({
     el: step,
@@ -39,7 +39,7 @@ export function initShowcase(section) {
 
   if (!hasWebGL()) {
     showFallback(mount);
-    steps.forEach((s) => s.classList.add("is-active"));
+    cards[0]?.classList.add("is-active");
     return null;
   }
 
@@ -52,18 +52,21 @@ export function initShowcase(section) {
       exposure: 1.1,
       envIntensity: 1.1,
       preserveDrawingBuffer: true,
+      rootMargin: "100% 0px",
     });
   } catch (err) {
     console.error("Showcase scene failed", err);
     showFallback(mount);
+    cards[0]?.classList.add("is-active");
     return null;
   }
+
+  stage.visible = true;
 
   const rail = new THREE.Group();
   stage.scene.add(rail);
 
   const blit = attachBlit(stage, mount);
-  const cards = pinCards(sticky, steps);
 
   const items = entries.map((entry, i) => {
     const holder = new THREE.Group();
@@ -84,14 +87,11 @@ export function initShowcase(section) {
   fitRail();
   stage.opts.onResize = fitRail;
 
-  // Nudge the row right so the product sits opposite the copy panel on desktop.
   const offsetFor = () => (window.innerWidth >= 1000 ? 1.55 : 0);
-
   const lastIdx = Math.max(1, items.length - 1);
-  // One extra beat at each end: first product enters from the right, last
-  // product leaves to the left. Cards stay put and swap with the focused item.
-  const targetOf = (progress) => progress * (lastIdx + 2) - 1;
-  let smoothIndex = targetOf(pinProgress(section));
+  const targetOf = (progress) => progress * (lastIdx + 1.5) - 1;
+  let smoothIndex = targetOf(showcaseTravel(section));
+  if (!Number.isFinite(smoothIndex)) smoothIndex = -1;
   let activeIndex = -1;
 
   const setActive = (index) => {
@@ -109,9 +109,12 @@ export function initShowcase(section) {
   };
 
   stage.onUpdate((dt, t) => {
-    const progress = pinProgress(section);
-    const target = targetOf(progress);
-    smoothIndex = damp(smoothIndex, target, 7, dt);
+    stage.visible = true;
+    const travel = showcaseTravel(section);
+    const progress = clamp(travel, 0, 1);
+    const target = Number.isFinite(travel) ? targetOf(travel) : -1;
+    smoothIndex = damp(smoothIndex, target, 8, dt);
+    if (!Number.isFinite(smoothIndex)) smoothIndex = target;
 
     rail.position.x = -smoothIndex * SPACING + offsetFor();
     rail.position.y = Math.sin(t * 0.5) * 0.06;
@@ -123,9 +126,6 @@ export function initShowcase(section) {
     items.forEach((item, i) => {
       const distance = i - smoothIndex;
       const focus = clamp(1 - Math.abs(distance), 0, 1);
-      // Same arc for every product: park just off-screen upper-right, then
-      // travel through the centre. Unclamped `enter` sent later items on a
-      // longer path that never settled on the card.
       const enter = clamp(distance, 0, 1.15);
       const leave = clamp(-distance, 0, 1.15);
       item.holder.visible = distance < 1.45 && distance > -1.45;
@@ -136,9 +136,9 @@ export function initShowcase(section) {
       item.holder.rotation.x = lerp(0.18, 0.02, focus) * Math.sign(distance || 1);
       item.holder.position.x = i * SPACING + enter * 1.55;
       item.holder.position.y =
-        enter * 3.15 - leave * 0.18 + Math.sin(t * 0.8 + i) * 0.04;
-      item.holder.position.z = enter * 2.35 - leave * 1.2;
-      item.holder.scale.setScalar(1 + enter * 1.12 - leave * 0.38);
+        enter * 1.15 - leave * 0.18 + Math.sin(t * 0.8 + i) * 0.04;
+      item.holder.position.z = enter * 1.5 - leave * 1.2;
+      item.holder.scale.setScalar(1 + enter * 0.55 - leave * 0.38);
     });
 
     const index = clamp(Math.round(target), 0, lastIdx);
@@ -155,17 +155,14 @@ export function initShowcase(section) {
   return stage;
 }
 
-function addLeadSpacers(section) {
-  const wrap = section.querySelector(".scrollscene__steps");
-  if (!wrap || wrap.querySelector(".scrollstep--lead")) return;
-  const make = () => {
-    const el = document.createElement("div");
-    el.className = "scrollstep scrollstep--lead";
-    el.setAttribute("aria-hidden", "true");
-    return el;
-  };
-  wrap.insertBefore(make(), wrap.firstChild);
-  wrap.appendChild(make());
+/** 0 when the section peeks in from the bottom (first item starts entering).
+ *  1 when the pin releases. >1 as the last item continues off the left. */
+function showcaseTravel(section) {
+  const r = section.getBoundingClientRect();
+  const vh = window.innerHeight || 1;
+  const scrollable = r.height - vh;
+  if (scrollable <= 0) return 0;
+  return (vh - r.top) / (vh + scrollable);
 }
 
 function pinCards(sticky, steps) {

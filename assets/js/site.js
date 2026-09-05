@@ -52,9 +52,10 @@ function buildHeader() {
     const activeChild = item.children.some((c) => isActive(c.href)) || isActive(item.href);
 
     return `<li class="nav__item">
-      <a class="nav__link${activeChild ? " is-active" : ""}" href="${item.href}" aria-haspopup="true">
-        ${item.label}${CARET}
-      </a>
+      <div class="nav__hit">
+        <a class="nav__link${activeChild ? " is-active" : ""}" href="${item.href}">${item.label}</a>
+        <button class="nav__more" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${item.label} menu">${CARET}</button>
+      </div>
       <div class="nav__panel${item.mega ? " nav__panel--wide" : ""}">${subs}${foot}</div>
     </li>`;
   }).join("");
@@ -72,44 +73,24 @@ function buildHeader() {
       </a>
 
       <nav class="nav" aria-label="Primary">
-        <ul style="display:flex;align-items:center;gap:.2rem">${navItems}</ul>
+        <ul>
+          ${navItems}
+          <li class="nav__item nav__item--cta">
+            <a class="btn btn--sm header__cta" href="quote.html"><span class="header__cta-full">Request a quote</span><span class="header__cta-short">Quote</span> ${ARROW}</a>
+          </li>
+        </ul>
       </nav>
 
       <div class="header__actions">
-        <button class="icon-btn" data-theme-toggle aria-label="Switch between black and white theme" title="Switch theme">
+        <button class="icon-btn" data-theme-toggle aria-label="Switch theme" data-tip="Switch theme">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.3"/>
             <path d="M8 1.6A6.4 6.4 0 018 14.4z" fill="currentColor"/>
           </svg>
         </button>
-        <a class="btn btn--sm header__cta" href="quote.html">Request a quote ${ARROW}</a>
-        <button class="icon-btn burger" data-burger aria-label="Open menu" aria-expanded="false">
-          <span class="burger__lines" aria-hidden="true"><i></i><i></i><i></i></span>
-        </button>
       </div>
     </div>
-  </header>
-
-  <div class="drawer" data-drawer>
-    ${NAV.map((item) => {
-      if (!item.children) {
-        return `<div class="drawer__group">
-          <a class="drawer__toggle" href="${item.href}">${item.label}</a>
-        </div>`;
-      }
-      return `<div class="drawer__group">
-        <button class="drawer__toggle" data-drawer-toggle>${item.label}<i>+</i></button>
-        <div class="drawer__panel">
-          ${item.children.map((c) => `<a href="${c.href}">${c.label}</a>`).join("")}
-        </div>
-      </div>`;
-    }).join("")}
-    <div class="drawer__foot">
-      <a class="btn btn--block" href="quote.html">Request a quote ${ARROW}</a>
-      <a class="btn btn--ghost btn--block" href="contact.html">Contact us</a>
-      <p class="mono muted" style="margin-top:.6rem">${COMPANY.phone} · ${COMPANY.email}</p>
-    </div>
-  </div>`;
+  </header>`;
 }
 
 /* ----------------------------------------------------------------- Footer */
@@ -285,6 +266,7 @@ function liquidGlassDefs() {
   const tile = glassMap(260, 170, 18, 28);
   const card = glassMap(280, 440, 20, 28);
   const sheet = glassMap(380, 520, 22, 36);
+  const panel = glassMap(360, 280, 20, 24);
   return `<svg class="lg-defs" aria-hidden="true" focusable="false">
     ${glassFilter("lg-pill", pill, 48, false)}
     ${glassFilter("lg-pill-liq", pill, 78, true)}
@@ -292,6 +274,8 @@ function liquidGlassDefs() {
     ${glassFilter("lg-round-liq", round, 70, true)}
     ${glassFilter("lg-wide", wide, 52, false)}
     ${glassFilter("lg-wide-liq", wide, 86, true)}
+    ${glassFilter("lg-nav", panel, 36, false)}
+    ${glassFilter("lg-nav-liq", panel, 54, true)}
     ${glassFilter("lg-tile", tile, 36, false)}
     ${glassFilter("lg-tile-liq", tile, 58, true)}
     ${glassFilter("lg-card", card, 32, false)}
@@ -302,7 +286,7 @@ function liquidGlassDefs() {
 }
 
 const GLASS_SEL =
-  ".btn, .nav__link, .filter, .icon-btn, .chip span, .nav__sub, .socials a, .marquee, .stat, .pcard, .scrollstep__card, .newsletter, .tag, .pcard__badge, .acc__head, .route, .cta, .card:not(.card--bare), .badge, .header, .hero__title, .hero__meta .lead";
+  ".btn, .nav__link, .nav__hit, .filter, .icon-btn, .chip span, .nav__sub, .nav__panel, .socials a, .marquee, .stat, .pcard, .scrollstep__card, .newsletter, .tag, .pcard__badge, .acc__head, .route, .cta, .card:not(.card--bare), .badge, .header, .hero__title, .hero__meta .lead";
 
 function unwrapLegacyGlass(el) {
   const fx = el.querySelector(":scope > .lg-fx");
@@ -321,11 +305,21 @@ function initLiquidGlass() {
     "pointermove",
     (e) => {
       const el = e.target.closest(GLASS_SEL);
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      if (!r.width || !r.height) return;
-      el.style.setProperty("--lg-x", `${((e.clientX - r.left) / r.width) * 100}%`);
-      el.style.setProperty("--lg-y", `${((e.clientY - r.top) / r.height) * 100}%`);
+      if (el) {
+        const r = el.getBoundingClientRect();
+        if (r.width && r.height) {
+          el.style.setProperty("--lg-x", `${((e.clientX - r.left) / r.width) * 100}%`);
+          el.style.setProperty("--lg-y", `${((e.clientY - r.top) / r.height) * 100}%`);
+        }
+      }
+      const panel = e.target.closest(".nav__panel");
+      if (panel && panel !== el) {
+        const r = panel.getBoundingClientRect();
+        if (r.width && r.height) {
+          panel.style.setProperty("--lg-x", `${((e.clientX - r.left) / r.width) * 100}%`);
+          panel.style.setProperty("--lg-y", `${((e.clientY - r.top) / r.height) * 100}%`);
+        }
+      }
     },
     { passive: true }
   );
@@ -386,35 +380,49 @@ function initTheme() {
 
 /* --------------------------------------------------------------- Nav logic */
 function initNav() {
-  const burger = $("[data-burger]");
-  const drawer = $("[data-drawer]");
+  const closeMenus = () => {
+    $$(".nav__item.is-open").forEach((item) => {
+      item.classList.remove("is-open");
+      item.querySelector(".nav__more")?.setAttribute("aria-expanded", "false");
+    });
+  };
 
-  burger?.addEventListener("click", () => {
-    const open = document.body.classList.toggle("menu-open");
-    document.body.classList.toggle("is-locked", open);
-    burger.setAttribute("aria-expanded", String(open));
-    burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-  });
-
-  $$("[data-drawer-toggle]", drawer || document).forEach((btn) => {
-    btn.addEventListener("click", () => btn.parentElement.classList.toggle("is-open"));
-  });
-
-  $$("a", drawer || document).forEach((link) => {
-    link.addEventListener("click", () => {
-      document.body.classList.remove("menu-open", "is-locked");
-      burger?.setAttribute("aria-expanded", "false");
+  $$(".nav__more").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const item = btn.closest(".nav__item");
+      const willOpen = !item.classList.contains("is-open");
+      closeMenus();
+      if (willOpen) {
+        item.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+      }
     });
   });
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && document.body.classList.contains("menu-open")) {
-      document.body.classList.remove("menu-open", "is-locked");
-      burger?.setAttribute("aria-expanded", "false");
-    }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".nav__item")) closeMenus();
   });
 
-  // Header shrink / hide, plus the reading progress bar.
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenus();
+  });
+
+  $$(".nav__panel").forEach((panel) => {
+    panel.addEventListener(
+      "wheel",
+      (e) => {
+        const max = panel.scrollHeight - panel.clientHeight;
+        if (max > 0) {
+          panel.scrollTop = Math.max(0, Math.min(max, panel.scrollTop + e.deltaY));
+        }
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+  });
+
   const header = $("[data-header]");
   const progress = $("[data-progress]");
   let lastY = window.scrollY;
@@ -424,9 +432,8 @@ function initNav() {
     header?.classList.toggle("is-stuck", y > 12);
 
     const goingDown = y > lastY && y > 320;
-    if (!document.body.classList.contains("menu-open")) {
-      header?.classList.toggle("is-hidden", goingDown);
-    }
+    header?.classList.toggle("is-hidden", goingDown);
+    if (goingDown) closeMenus();
     lastY = y;
 
     if (progress) {

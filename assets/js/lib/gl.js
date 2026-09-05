@@ -223,7 +223,7 @@ export class Stage {
       ([entry]) => {
         this.visible = entry.isIntersecting;
       },
-      { rootMargin: "160px 0px" }
+      { rootMargin: opts.rootMargin || "160px 0px" }
     );
     this.io.observe(mount);
 
@@ -299,6 +299,31 @@ export const lerp = (a, b, t) => a + (b - a) * t;
 /** Frame-rate independent smoothing. */
 export const damp = (a, b, lambda, dt) => lerp(a, b, 1 - Math.exp(-lambda * dt));
 
+/**
+ * Critically-damped follow (Unity SmoothDamp).
+ * Tracks fast flicks and settles without the rigid feel of a fixed lerp.
+ * Returns [value, velocity].
+ */
+export function smoothDamp(current, target, velocity, smoothTime, dt, maxSpeed = Infinity) {
+  const st = Math.max(0.0001, smoothTime);
+  const omega = 2 / st;
+  const x = omega * dt;
+  const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+  let change = current - target;
+  const original = target;
+  const maxChange = maxSpeed * st;
+  change = Math.max(-maxChange, Math.min(maxChange, change));
+  target = current - change;
+  const temp = (velocity + omega * change) * dt;
+  velocity = (velocity - omega * temp) * exp;
+  let output = target + (change + temp) * exp;
+  if (original - current > 0 === output > original) {
+    output = original;
+    velocity = (output - original) / (dt || 1e-4);
+  }
+  return [output, velocity];
+}
+
 /** Maps v from [inMin,inMax] to [outMin,outMax], clamped. */
 export function mapRange(v, inMin, inMax, outMin, outMax) {
   const t = clamp((v - inMin) / (inMax - inMin || 1), 0, 1);
@@ -313,6 +338,8 @@ class ScrollTracker {
     this.y = window.scrollY;
     this.smooth = this.y;
     this.velocity = 0;
+    this._smoothVel = 0;
+    this._prevY = this.y;
     window.addEventListener(
       "scroll",
       () => {
@@ -321,9 +348,12 @@ class ScrollTracker {
       { passive: true }
     );
     ticker.add((dt) => {
-      const prev = this.smooth;
-      this.smooth = damp(this.smooth, this.y, 9, dt);
-      this.velocity = (this.smooth - prev) / (dt || 0.016);
+      const step = dt || 0.016;
+      this.velocity = (this.y - this._prevY) / step;
+      this._prevY = this.y;
+      const [next, vel] = smoothDamp(this.smooth, this.y, this._smoothVel, 0.08, step);
+      this.smooth = next;
+      this._smoothVel = vel;
     });
   }
 }

@@ -37,19 +37,19 @@ export const COMPANY = {
 
 /* ---------------------------------------------------------------- Navigation */
 export const NAV = [
-  { label: "Home", href: "index.html" },
   {
     label: "Company",
     href: "about.html",
     children: [
       { label: "About Us", href: "about.html", code: "01", desc: "Three decades of Sialkot craft." },
-      { label: "Transport", href: "transport.html", code: "02", desc: "Sialkot to Rotterdam, GSP+ and freight." },
-      { label: "Sustainability", href: "sustainability.html", code: "03", desc: "Ethics, environment, Atlanta Agreement." },
-      { label: "Insights", href: "insights.html", code: "04", desc: "Trade notes and EU regulation updates." },
-      { label: "Careers", href: "careers.html", code: "05", desc: "Join the floor or the front office." },
+      { label: "Manufacturing", href: "manufacturing.html", code: "02", desc: "Two units, from intake to sealed carton." },
+      { label: "Transport", href: "transport.html", code: "03", desc: "Sialkot to Rotterdam, GSP+ and freight." },
+      { label: "Sustainability", href: "sustainability.html", code: "04", desc: "Ethics, environment, Atlanta Agreement." },
+      { label: "Insights", href: "insights.html", code: "05", desc: "Trade notes and EU regulation updates." },
+      { label: "Careers", href: "careers.html", code: "06", desc: "Join the floor or the front office." },
+      { label: "Contact", href: "contact.html", code: "07", desc: "Sialkot desk and Hamburg EU office." },
     ],
   },
-  { label: "Manufacturing process", href: "manufacturing.html" },
   {
     label: "Products",
     href: "products.html",
@@ -61,7 +61,7 @@ export const NAV = [
       { label: "Cricket & Hockey", href: "products.html#bathockey", code: "A4", desc: "Willow bats, leather balls, sticks." },
       { label: "Fitness & Strength", href: "products.html#fitness", code: "A5", desc: "Kettlebells, dumbbells, plates." },
       { label: "Protective Gear", href: "products.html#protective", code: "A6", desc: "CE-certified PPE for sport." },
-      { label: "Training Equipment", href: "products.html#training", code: "A7", desc: "Cones, hurdles, agility kit." },
+      { label: "Training Equipment", href: "products.html#training", code: "A7", desc: "Agility, speed and coaching kit." },
     ],
   },
   {
@@ -73,7 +73,6 @@ export const NAV = [
       { label: "Export to the EU", href: "export.html", code: "08", desc: "GSP+, GPSR, incoterms, logistics." },
     ],
   },
-  { label: "Contact", href: "contact.html" },
 ];
 
 /* ---------------------------------------------------------------- Categories */

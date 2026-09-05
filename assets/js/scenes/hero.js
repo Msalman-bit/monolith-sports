@@ -80,7 +80,7 @@ export function initHero(mount) {
   stage.onUpdate((dt, t) => {
     const vh = window.innerHeight || 1;
     const target = clamp(window.scrollY / vh, 0, 1);
-    progress = damp(progress, target, 6, dt);
+    progress = damp(progress, target, 8, dt);
 
     const spinScale = REDUCED_MOTION ? 0 : 1;
 
