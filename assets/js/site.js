@@ -1009,56 +1009,58 @@ function initCredit() {
     return;
   }
 
-  const host = el.closest(".footer__bottom") || el;
-  let inView = false;
   let lastY = window.scrollY;
   let ticking = false;
 
-  const atEnd = () => {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    return max <= 0 || window.scrollY >= max - 32;
+  const viewH = () => window.visualViewport?.height || window.innerHeight;
+  const scrollY = () => window.visualViewport?.pageTop || window.scrollY;
+  const nearEnd = () => {
+    const max = document.documentElement.scrollHeight - viewH();
+    return max > 80 && scrollY() >= max - 72;
+  };
+  const onScreen = () => {
+    const r = el.getBoundingClientRect();
+    const h = viewH();
+    return r.height > 0 && r.bottom > 10 && r.top < h - 10;
+  };
+
+  const show = () => {
+    if (el.classList.contains("is-in")) return;
+    el.classList.add("is-in");
+  };
+
+  const hide = () => {
+    if (!el.classList.contains("is-in")) return;
+    el.classList.remove("is-in");
   };
 
   const sync = () => {
     ticking = false;
-    const y = window.scrollY;
+    const y = scrollY();
     const dy = y - lastY;
     lastY = y;
-
-    if (atEnd()) {
-      el.classList.add("is-in");
+    if (!onScreen()) {
+      hide();
       return;
     }
-    if (!inView) {
-      el.classList.remove("is-in");
+    if (dy < -8 && !nearEnd()) {
+      hide();
       return;
     }
-    if (dy >= 0) {
-      el.classList.add("is-in");
-      return;
-    }
-    if (dy < -6) el.classList.remove("is-in");
+    show();
   };
 
-  const io = new IntersectionObserver(
-    (entries) => {
-      inView = entries.some((entry) => entry.isIntersecting);
-      sync();
-    },
-    { threshold: [0, 0.15, 0.4] }
-  );
-  io.observe(host);
+  const requestSync = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(sync);
+  };
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(sync);
-    },
-    { passive: true }
-  );
-  sync();
+  window.addEventListener("scroll", requestSync, { passive: true });
+  window.addEventListener("resize", requestSync, { passive: true });
+  window.visualViewport?.addEventListener("scroll", requestSync, { passive: true });
+  window.visualViewport?.addEventListener("resize", requestSync, { passive: true });
+  requestSync();
 }
 
 /* -------------------------------------------------------------- Preloader */
