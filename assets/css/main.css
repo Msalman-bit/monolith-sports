@@ -173,6 +173,7 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: auto;
   scroll-padding-top: calc(var(--chrome-h) + 24px);
+  overflow-x: clip;
 }
 
 body {
@@ -185,7 +186,7 @@ body {
   letter-spacing: -0.006em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow-x: clip;
   transition: background-color 0.5s var(--ease), color 0.5s var(--ease);
 }
 
@@ -1293,6 +1294,12 @@ html[data-theme="light"] .header::after {
   transform: translateY(-100%);
 }
 
+@media (max-width: 899px) {
+  .header.is-hidden {
+    transform: none;
+  }
+}
+
 .header__inner {
   position: relative;
   z-index: 1;
@@ -1378,10 +1385,11 @@ html[data-theme="light"] .header::after {
   display: flex;
   align-items: center;
   grid-area: nav;
-  width: auto;
+  width: 100%;
+  min-width: 0;
   min-height: var(--nav-dock-h);
   padding: 0 0 0.45rem;
-  justify-self: start;
+  justify-self: stretch;
 }
 
 .nav ul {
@@ -1390,7 +1398,8 @@ html[data-theme="light"] .header::after {
   align-items: center;
   justify-content: flex-start;
   gap: 0.2rem;
-  width: auto;
+  width: 100%;
+  min-width: 0;
 }
 
 .nav__item {
@@ -1577,6 +1586,26 @@ html[data-theme="light"] .nav__panel {
 }
 
 @media (max-width: 679px) {
+  .nav ul {
+    justify-content: space-between;
+    gap: 0.15rem;
+  }
+
+  .nav__link {
+    padding: 0.4rem 0.45rem;
+    font-size: 0.6875rem;
+  }
+
+  .nav__more {
+    padding: 0.4rem 0.34rem 0.4rem 0;
+  }
+
+  .header__cta {
+    --btn-pad-x: 0.62rem;
+    --btn-pad-y: 0.38rem;
+    font-size: 0.6875rem;
+  }
+
   .nav__panel,
   .nav__panel--wide {
     left: 0;
@@ -1830,19 +1859,15 @@ html[data-theme="light"] .header .icon-btn:focus-visible {
 }
 
 .header__cta {
-  display: none;
+  display: inline-flex;
+  --btn-pad-x: 0.7rem;
+  --btn-pad-y: 0.4rem;
+  flex: none;
+  font-size: 0.75rem;
 }
 
 .header__cta-short {
   display: none;
-}
-
-@media (min-width: 620px) {
-  .header__cta {
-    display: inline-flex;
-    --btn-pad-x: 0.85rem;
-    --btn-pad-y: 0.48rem;
-  }
 }
 
 @media (max-width: 900px) {

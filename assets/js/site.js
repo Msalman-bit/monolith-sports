@@ -426,7 +426,7 @@ function initNav() {
   const header = $("[data-header]");
   const progress = $("[data-progress]");
   let lastY = window.scrollY;
-  let hideArmed = false;
+  const canHideHeader = () => window.matchMedia("(min-width: 900px)").matches;
 
   const syncChromeHeight = () => {
     if (!header) return;
@@ -440,10 +440,12 @@ function initNav() {
     const y = window.scrollY;
     header?.classList.toggle("is-stuck", y > 12);
 
-    if (hideArmed) {
+    if (canHideHeader()) {
       const goingDown = y > lastY && y > 320;
       header?.classList.toggle("is-hidden", goingDown);
       if (goingDown) closeMenus();
+    } else {
+      header?.classList.remove("is-hidden");
     }
     lastY = y;
     syncChromeHeight();
@@ -465,10 +467,6 @@ function initNav() {
   window.visualViewport?.addEventListener("resize", syncChromeHeight, { passive: true });
   window.addEventListener("pageshow", openFromHeader);
   openFromHeader();
-  requestAnimationFrame(() => {
-    syncChromeHeight();
-    hideArmed = true;
-  });
   onScroll();
 }
 
