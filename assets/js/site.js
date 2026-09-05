@@ -614,6 +614,84 @@ function showStatus(form, message) {
   status.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+const MAIL_LABELS = {
+  product: "Product line",
+  quantity: "Quantity",
+  target_price: "Target unit price",
+  programme: "Programme type",
+  custom: "Customisation",
+  incoterm: "Incoterm",
+  destination: "Destination",
+  needed_by: "In-market date",
+  currency: "Currency",
+  name: "Name",
+  company: "Company",
+  email: "Email",
+  phone: "Phone / WhatsApp",
+  business: "Business type",
+  message: "Message",
+  samples: "Physical sample",
+  country: "Country",
+  topic: "Topic",
+  urgent: "Urgent",
+};
+
+function collectFormFields(form) {
+  const data = new FormData(form);
+  const fields = {};
+  for (const [key, raw] of data.entries()) {
+    if (!key || key === "consent" || key.startsWith("_")) continue;
+    const value = String(raw ?? "").trim();
+    if (!value) continue;
+    if (fields[key]) {
+      fields[key] = `${fields[key]}, ${value}`;
+    } else {
+      fields[key] = value === "on" ? "Yes" : value;
+    }
+  }
+  return fields;
+}
+
+function formatMailBody(title, fields) {
+  const rows = Object.entries(fields)
+    .filter(([, value]) => value)
+    .map(([key, value]) => `${MAIL_LABELS[key] || key}: ${value}`);
+  return [
+    "MONOLITH SPORTS",
+    title,
+    "----------------------------------------",
+    "",
+    ...rows,
+    "",
+    `Received: ${new Date().toUTCString()}`,
+    `Source: ${location.href}`,
+  ].join("\n");
+}
+
+async function sendToGmail({ subject, replyTo, name, body }) {
+  const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(COMPANY.email)}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      _subject: subject,
+      _template: "box",
+      _captcha: "false",
+      _replyto: replyTo || COMPANY.email,
+      name: name || "Website visitor",
+      email: replyTo || COMPANY.email,
+      message: body,
+    }),
+  });
+  if (!res.ok) throw new Error("mail failed");
+  const json = await res.json().catch(() => ({}));
+  if (json.success === false || json.success === "false") {
+    throw new Error(json.message || "mail failed");
+  }
+}
+
 function initForms() {
   $$("form[data-form]").forEach((form) => {
     form.addEventListener("submit", async (e) => {
@@ -639,23 +717,25 @@ function initForms() {
         button.textContent = "Sending…";
       }
 
-      const endpoint = form.dataset.endpoint;
+      const fields = collectFormFields(form);
+      const isQuote = Boolean(form.querySelector("[data-quote-products], #product"));
+      const subject = isQuote
+        ? `Quote request — ${fields.product || "Monolith Sports"}`
+        : `Website message — ${fields.topic || fields.name || "Monolith Sports"}`;
+      const title = isQuote ? "QUOTATION REQUEST" : "CONTACT MESSAGE";
+
       try {
-        if (endpoint) {
-          await fetch(endpoint, {
-            method: "POST",
-            body: new FormData(form),
-            headers: { Accept: "application/json" },
-          });
-        } else {
-          // No endpoint configured yet — see README for wiring this up.
-          await new Promise((r) => setTimeout(r, 700));
-        }
+        await sendToGmail({
+          subject,
+          replyTo: fields.email,
+          name: fields.name,
+          body: formatMailBody(title, fields),
+        });
         form.reset();
         showStatus(
           form,
           form.dataset.success ||
-            `Thank you. Your enquiry reference has been logged and our export desk replies within one working day. For anything urgent call ${COMPANY.phone}.`
+            `Thank you. Your enquiry has been sent to ${COMPANY.email}. We reply within one working day. For anything urgent call ${COMPANY.phone}.`
         );
       } catch {
         showStatus(
@@ -762,16 +842,39 @@ function initForms() {
 
     button?.addEventListener("click", dock);
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       dock();
       if (!input.value.trim() || !input.checkValidity()) {
         input.focus();
         return;
       }
-      button.textContent = "Subscribed";
-      input.value = "";
-      setTimeout(() => (button.textContent = "Subscribe"), 2600);
+      const original = button?.textContent;
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Sending…";
+      }
+      try {
+        await sendToGmail({
+          subject: "Trade bulletin signup — Monolith Sports",
+          replyTo: input.value.trim(),
+          name: "Newsletter subscriber",
+          body: formatMailBody("TRADE BULLETIN SIGNUP", {
+            email: input.value.trim(),
+          }),
+        });
+        input.value = "";
+        if (button) button.textContent = "Subscribed";
+      } catch {
+        if (button) button.textContent = "Try again";
+      } finally {
+        setTimeout(() => {
+          if (button) {
+            button.disabled = false;
+            button.textContent = original || "Subscribe";
+          }
+        }, 2600);
+      }
     });
   });
 }
