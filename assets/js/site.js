@@ -178,6 +178,7 @@ function buildFooter() {
         <span>© <span data-year></span> ${COMPANY.legalName}. All rights reserved.</span>
         <p class="footer__credit" data-credit>
           <span class="footer__credit-label">Designed and developed</span>
+          <span class="footer__credit-rule" aria-hidden="true"></span>
           <span class="footer__credit-name">Salman Goraya</span>
         </p>
       </div>
@@ -960,9 +961,47 @@ function initSideIndex() {
 }
 
 /* ---------------------------------------------------------- Footer credit */
+function splitCreditPhrase(node, delayMs) {
+  const text = (node.textContent || "").replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  node.textContent = "";
+  node.style.setProperty("--credit-delay", `${delayMs}ms`);
+  node.setAttribute("aria-hidden", "true");
+
+  let i = 0;
+  text.split(" ").forEach((part) => {
+    const word = document.createElement("span");
+    word.className = "footer__credit-word";
+    [...part].forEach((ch) => {
+      const char = document.createElement("span");
+      char.className = "footer__credit-char";
+      char.style.setProperty("--i", String(i));
+      const glyph = document.createElement("span");
+      glyph.textContent = ch;
+      char.appendChild(glyph);
+      word.appendChild(char);
+      i += 1;
+    });
+    node.appendChild(word);
+  });
+  return text;
+}
+
 function initCredit() {
   const el = $("[data-credit]");
   if (!el) return;
+
+  const label = $(".footer__credit-label", el);
+  const name = $(".footer__credit-name", el);
+  const spoken = [label, name]
+    .map((node) => (node?.textContent || "").replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .join(", ");
+  if (spoken) el.setAttribute("aria-label", spoken);
+
+  if (label) splitCreditPhrase(label, 50);
+  if (name) splitCreditPhrase(name, 420);
+  el.classList.add("is-split");
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduce) {
