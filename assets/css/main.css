@@ -155,6 +155,20 @@ html[data-theme="light"] {
   }
 }
 
+@media (max-width: 899px) {
+  :root {
+    --header-float: 0.5rem;
+    --chrome-h: calc(var(--header-h) + var(--nav-dock-h) + var(--header-float) + var(--safe-t));
+  }
+}
+
+@media (max-width: 679px) {
+  :root {
+    --header-h: 64px;
+    --nav-dock-h: 50px;
+  }
+}
+
 /* --------------------------------------------------------------------------
    2. Reset
    -------------------------------------------------------------------------- */
@@ -240,19 +254,73 @@ table {
   outline-offset: 3px;
 }
 
-/* Monochrome scrollbar */
+/* Scrollbar — same liquid-glass language as the nav pills */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--fg) 32%, transparent) transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 ::-webkit-scrollbar-track {
-  background: var(--bg-alt);
+  background: transparent;
+  margin-block: 10px;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--n-400);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fg) 38%, transparent) 0%,
+      color-mix(in srgb, var(--fg) 16%, transparent) 48%,
+      color-mix(in srgb, var(--fg) 28%, transparent) 100%
+    );
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 1px 0 var(--glass-inset);
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--n-500);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fg) 52%, transparent) 0%,
+      color-mix(in srgb, var(--fg) 28%, transparent) 48%,
+      color-mix(in srgb, var(--fg) 40%, transparent) 100%
+    );
+  background-clip: padding-box;
+}
+
+html[data-theme="light"]::-webkit-scrollbar-thumb,
+html[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(255, 255, 255, 0.55) 100%
+    );
+  box-shadow:
+    0 4px 12px -6px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(17, 17, 17, 0.08);
+}
+
+html[data-theme="light"]::-webkit-scrollbar-thumb:hover,
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.7) 100%
+    );
 }
 
 /* --------------------------------------------------------------------------
@@ -1021,6 +1089,15 @@ html[data-theme="light"] .card:not(.card--bare).is-liquid {
   backdrop-filter: blur(3px) url(#lg-sheet-liq) saturate(170%) brightness(1.01);
 }
 
+.scrollstep__card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(0, 0, 0, 0.24) 48%,
+    rgba(0, 0, 0, 0.33) 100%
+  );
+}
+
 .cta {
   background: linear-gradient(
     180deg,
@@ -1037,7 +1114,7 @@ html[data-theme="light"] .card:not(.card--bare).is-liquid {
   backdrop-filter: blur(3px) url(#lg-sheet-liq) saturate(145%) brightness(0.7);
 }
 
-.cta .btn {
+.cta .btn:not(.btn--ghost) {
   background: linear-gradient(
     180deg,
     rgba(18, 18, 18, 0.72) 0%,
@@ -1049,7 +1126,7 @@ html[data-theme="light"] .card:not(.card--bare).is-liquid {
   backdrop-filter: blur(2px) url(#lg-pill) saturate(130%) brightness(0.62);
 }
 
-.cta .btn.is-liquid {
+.cta .btn:not(.btn--ghost).is-liquid {
   backdrop-filter: blur(2px) url(#lg-pill-liq) saturate(145%) brightness(0.7);
 }
 
@@ -1117,6 +1194,14 @@ html[data-theme="light"] .scrollstep__card {
   box-shadow: var(--lg-light-shadow);
   backdrop-filter: blur(12px) saturate(160%) brightness(1.08);
   -webkit-backdrop-filter: blur(12px) saturate(160%) brightness(1.08);
+}
+
+html[data-theme="light"] .scrollstep__card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.91) 0%,
+    rgba(255, 255, 255, 0.63) 100%
+  );
 }
 
 html[data-theme="light"] .pcard {
@@ -1621,7 +1706,7 @@ html[data-theme="light"] .nav__panel {
 @media (max-width: 899px) {
   .nav ul {
     width: 100%;
-    gap: 2px;
+    gap: 0.4rem;
     justify-content: stretch;
   }
 
@@ -1655,6 +1740,25 @@ html[data-theme="light"] .nav__panel {
 }
 
 @media (max-width: 679px) {
+  .header__inner {
+    row-gap: 0.1rem;
+    align-items: center;
+  }
+
+  .brand {
+    min-height: var(--header-h);
+    padding-block: 0.15rem 0;
+  }
+
+  .header__actions {
+    align-self: center;
+  }
+
+  .nav {
+    min-height: 0;
+    padding: 0 0 0.32rem;
+  }
+
   .nav__link {
     font-size: 0.6875rem;
   }
@@ -1725,6 +1829,24 @@ html[data-theme="light"] .nav__panel {
 
   .header__actions {
     margin-left: 0.85rem;
+  }
+}
+
+@media (max-width: 899px) {
+  .header {
+    top: calc(var(--header-float) + var(--safe-t));
+    right: 0.85rem;
+    left: 0.85rem;
+    width: auto;
+    padding-top: 0;
+    min-height: var(--header-h);
+    border-radius: var(--r-lg);
+  }
+}
+
+@media (min-width: 680px) and (max-width: 899px) {
+  .header {
+    height: var(--header-h);
   }
 }
 
@@ -1886,29 +2008,53 @@ html[data-theme="light"] .header .icon-btn:focus-visible {
   top: calc(100% + 10px);
   right: 0;
   z-index: 40;
-  padding: 0.38rem 0.65rem;
+  padding: 0.45rem 0.8rem;
   border-radius: var(--r-pill);
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
   font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #f3f3f3;
-  background: rgba(10, 10, 10, 0.9);
-  box-shadow: 0 12px 28px -14px rgba(0, 0, 0, 0.55);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  line-height: 1.2;
+  color: #f5f5f7;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(8, 8, 8, 0.78) 48%,
+    rgba(0, 0, 0, 0.86) 100%
+  );
+  box-shadow:
+    0 14px 32px -16px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px) saturate(165%) brightness(1.02);
+  -webkit-backdrop-filter: blur(12px) saturate(165%) brightness(1.02);
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(6px);
-  transition: opacity 0.28s var(--ease), transform 0.32s var(--ease), visibility 0.28s;
+  transform: translate3d(6px, 10px, 0) scale(0.84);
+  transform-origin: 92% 0%;
+  filter: blur(8px);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.24s var(--ease),
+    filter 0.22s var(--ease),
+    visibility 0.2s;
 }
 
-.header .icon-btn:hover::after,
-.header .icon-btn:focus-visible::after {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+@media (hover: hover) and (pointer: fine) {
+  .header .icon-btn:hover:not(:active)::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+    transition:
+      opacity 0.42s var(--ease),
+      transform 0.55s var(--ease),
+      filter 0.5s var(--ease),
+      visibility 0s;
+    transition-delay: 0.05s;
+  }
 }
 
 .header__cta {
@@ -2094,6 +2240,29 @@ body.menu-open .drawer {
   .page-hero {
     padding-top: calc(var(--chrome-h) + 1.35rem);
   }
+
+  /* Soften the clipped 3D edge into a liquid-glass lens instead of a hard cut. */
+  .hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 5.75rem;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in srgb, var(--bg) 16%, transparent) 52%,
+      color-mix(in srgb, var(--bg) 40%, transparent) 100%
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(18px) url(#lg-wide-liq) saturate(175%) brightness(1.05);
+    -webkit-backdrop-filter: blur(18px) saturate(165%) brightness(1.03);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 55%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 55%, #000 100%);
+  }
 }
 
 .hero__canvas {
@@ -2235,8 +2404,10 @@ body.menu-open .drawer {
 .hero .btn--ghost,
 .header .header__cta,
 .cta .btn--ghost,
+a.btn[href^="quote.html"],
 html[data-theme="light"] .header .btn.header__cta,
-html[data-theme="light"] .cta .btn.btn--ghost {
+html[data-theme="light"] .cta .btn.btn--ghost,
+html[data-theme="light"] a.btn[href^="quote.html"] {
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.77) 0%,
@@ -2263,8 +2434,10 @@ html[data-theme="light"] .header .btn.header__cta {
 .hero .btn--ghost.is-liquid,
 .header .header__cta.is-liquid,
 .cta .btn--ghost.is-liquid,
+a.btn[href^="quote.html"].is-liquid,
 html[data-theme="light"] .header .btn.header__cta.is-liquid,
-html[data-theme="light"] .cta .btn.btn--ghost.is-liquid {
+html[data-theme="light"] .cta .btn.btn--ghost.is-liquid,
+html[data-theme="light"] a.btn[href^="quote.html"].is-liquid {
   backdrop-filter: blur(2px) url(#lg-pill-liq) saturate(175%) brightness(1.26);
   -webkit-backdrop-filter: blur(8px) saturate(175%) brightness(1.26);
 }
@@ -2796,6 +2969,30 @@ html[data-theme="light"] .pcard__stage::before {
     color-mix(in srgb, var(--bg) 40%, transparent) 45%,
     transparent 100%
   );
+}
+
+@media (max-width: 679px) {
+  .scrollscene__canvas::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 6.25rem;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg) 36%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 10%, transparent) 58%,
+      transparent 100%
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(18px) url(#lg-wide-liq) saturate(175%) brightness(1.05);
+    -webkit-backdrop-filter: blur(18px) saturate(165%) brightness(1.03);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 40%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 40%, transparent 100%);
+  }
 }
 
 @media (min-width: 900px) {

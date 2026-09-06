@@ -76,7 +76,7 @@ function buildHeader() {
         <ul>
           ${navItems}
           <li class="nav__item nav__item--cta">
-            <a class="btn btn--sm header__cta" href="quote.html"><span class="header__cta-full">Request a quote</span><span class="header__cta-short">Quote</span> ${ARROW}</a>
+            <a class="btn btn--sm btn--ghost header__cta" href="quote.html"><span class="header__cta-full">Request a quote</span><span class="header__cta-short">Quote</span> ${ARROW}</a>
           </li>
         </ul>
       </nav>
