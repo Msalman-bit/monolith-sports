@@ -1644,19 +1644,22 @@ html[data-theme="light"] .nav__hit .nav__link:hover {
 }
 
 html[data-theme="light"] .nav__panel {
-  background: radial-gradient(
-    ellipse 74% 68% at 50% 50%,
-    rgba(8, 8, 8, 0.98) 0%,
-    rgba(8, 8, 8, 0.96) 52%,
-    rgba(6, 6, 6, 0.79) 76%,
-    rgba(0, 0, 0, 0.68) 100%
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(255, 255, 255, 0.8) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(17, 17, 17, 0.08);
   box-shadow:
-    var(--shadow-lg),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(3px) url(#lg-nav) saturate(175%) brightness(1);
-  -webkit-backdrop-filter: blur(10px) saturate(165%) brightness(0.96);
+    0 22px 50px -22px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(3px) url(#lg-nav) saturate(165%) brightness(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
+}
+
+html[data-theme="light"] .nav__panel.is-liquid,
+html[data-theme="light"] .nav__item.is-open .nav__panel {
+  backdrop-filter: blur(3px) url(#lg-nav-liq) saturate(175%) brightness(1.1);
 }
 
 .nav__panel.is-liquid,
@@ -1737,6 +1740,36 @@ html[data-theme="light"] .nav__panel {
     --btn-pad-y: 0.42rem;
     font-size: 0.6875rem;
   }
+
+  .nav {
+    position: relative;
+  }
+
+  .nav__item {
+    position: static;
+  }
+
+  .nav__panel,
+  .nav__panel--wide {
+    left: 0;
+    right: 0;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    transform: translate(0, 8px);
+    max-height: min(28rem, calc(100dvh - var(--chrome-h) - 1.5rem));
+  }
+
+  .nav__item.is-open .nav__panel {
+    transform: translate(0, 0);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav__item:hover .nav__panel,
+    .nav__item:focus-within .nav__panel {
+      transform: translate(0, 0);
+    }
+  }
 }
 
 @media (max-width: 679px) {
@@ -1765,29 +1798,8 @@ html[data-theme="light"] .nav__panel {
 
   .nav__panel,
   .nav__panel--wide {
-    left: 0;
-    min-width: min(320px, calc(100vw - 1.75rem));
-    max-width: calc(100vw - 1.5rem);
-    overflow-x: hidden;
-    overflow-y: auto;
-    transform: translate(0, 8px);
     grid-template-columns: 1fr;
-  }
-
-  .nav__item:nth-last-child(-n + 2) .nav__panel {
-    left: auto;
-    right: 0;
-  }
-
-  .nav__item.is-open .nav__panel {
-    transform: translate(0, 0);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .nav__item:hover .nav__panel,
-    .nav__item:focus-within .nav__panel {
-      transform: translate(0, 0);
-    }
+    padding: 0.85rem;
   }
 }
 
@@ -1906,18 +1918,24 @@ html[data-theme="light"] .nav__sub {
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  color: #f3f3f3;
+  color: #1d1d1f;
+}
+
+html[data-theme="light"] .nav__sub:hover,
+html[data-theme="light"] .nav__sub.is-liquid,
+html[data-theme="light"] .nav__sub:focus-visible {
+  background: rgba(17, 17, 17, 0.05);
 }
 
 html[data-theme="light"] .nav__sub-title,
 html[data-theme="light"] .nav__panel-foot,
 html[data-theme="light"] .nav__panel-foot .mono {
-  color: #f3f3f3;
+  color: #1d1d1f;
 }
 
 html[data-theme="light"] .nav__sub-title span,
 html[data-theme="light"] .nav__sub-desc {
-  color: rgba(255, 255, 255, 0.58);
+  color: #6e6e73;
 }
 
 .nav__sub-title {
@@ -2019,13 +2037,13 @@ html[data-theme="light"] .header .icon-btn:focus-visible {
   color: #f5f5f7;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(8, 8, 8, 0.78) 48%,
-    rgba(0, 0, 0, 0.86) 100%
+    rgba(28, 28, 28, 0.94) 0%,
+    rgba(8, 8, 8, 0.96) 48%,
+    rgba(0, 0, 0, 0.98) 100%
   );
   box-shadow:
-    0 14px 32px -16px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    0 14px 32px -16px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px) saturate(165%) brightness(1.02);
   -webkit-backdrop-filter: blur(12px) saturate(165%) brightness(1.02);
   white-space: nowrap;
@@ -2040,6 +2058,21 @@ html[data-theme="light"] .header .icon-btn:focus-visible {
     transform 0.24s var(--ease),
     filter 0.22s var(--ease),
     visibility 0.2s;
+}
+
+html[data-theme="light"] .header .icon-btn::after {
+  color: #1d1d1f;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(255, 255, 255, 0.82) 100%
+  );
+  box-shadow:
+    0 14px 32px -16px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(17, 17, 17, 0.08);
+  backdrop-filter: blur(12px) saturate(165%) brightness(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(165%) brightness(1.08);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -2404,10 +2437,8 @@ body.menu-open .drawer {
 .hero .btn--ghost,
 .header .header__cta,
 .cta .btn--ghost,
-a.btn[href^="quote.html"],
 html[data-theme="light"] .header .btn.header__cta,
-html[data-theme="light"] .cta .btn.btn--ghost,
-html[data-theme="light"] a.btn[href^="quote.html"] {
+html[data-theme="light"] .cta .btn.btn--ghost {
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.77) 0%,
@@ -2434,10 +2465,51 @@ html[data-theme="light"] .header .btn.header__cta {
 .hero .btn--ghost.is-liquid,
 .header .header__cta.is-liquid,
 .cta .btn--ghost.is-liquid,
-a.btn[href^="quote.html"].is-liquid,
 html[data-theme="light"] .header .btn.header__cta.is-liquid,
-html[data-theme="light"] .cta .btn.btn--ghost.is-liquid,
-html[data-theme="light"] a.btn[href^="quote.html"].is-liquid {
+html[data-theme="light"] .cta .btn.btn--ghost.is-liquid {
+  backdrop-filter: blur(2px) url(#lg-pill-liq) saturate(175%) brightness(1.26);
+  -webkit-backdrop-filter: blur(8px) saturate(175%) brightness(1.26);
+}
+
+html[data-theme="light"] a.btn[href^="quote.html"],
+html[data-theme="light"] .hero a.btn[href^="quote.html"],
+html[data-theme="light"] .cta a.btn[href^="quote.html"],
+html[data-theme="light"] .header .btn.header__cta {
+  background: #111111;
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 8px 20px -10px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(8px) saturate(140%) brightness(0.72);
+  backdrop-filter: blur(2px) url(#lg-pill) saturate(140%) brightness(0.72);
+  -webkit-backdrop-filter: blur(8px) saturate(140%) brightness(0.72);
+}
+
+html[data-theme="light"] a.btn[href^="quote.html"].is-liquid,
+html[data-theme="light"] .header .btn.header__cta.is-liquid {
+  backdrop-filter: blur(2px) url(#lg-pill-liq) saturate(150%) brightness(0.8);
+  -webkit-backdrop-filter: blur(8px) saturate(150%) brightness(0.8);
+}
+
+html[data-theme="light"] .hero a.btn[href="products.html"],
+html[data-theme="light"] .cta a.btn[href="contact.html"] {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.77) 0%,
+    rgba(255, 255, 255, 0.62) 100%
+  );
+  color: #111111;
+  box-shadow:
+    0 8px 22px -12px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px) saturate(160%) brightness(1.18);
+  backdrop-filter: blur(2px) url(#lg-pill) saturate(165%) brightness(1.22);
+  -webkit-backdrop-filter: blur(8px) saturate(160%) brightness(1.18);
+}
+
+html[data-theme="light"] .hero a.btn[href="products.html"].is-liquid,
+html[data-theme="light"] .cta a.btn[href="contact.html"].is-liquid {
   backdrop-filter: blur(2px) url(#lg-pill-liq) saturate(175%) brightness(1.26);
   -webkit-backdrop-filter: blur(8px) saturate(175%) brightness(1.26);
 }
