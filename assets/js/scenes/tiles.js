@@ -184,6 +184,22 @@ export function tileEngine() {
 /** Mounts a spinning product into every catalogue stage. Scroll-scene steps
  *  also carry data-model for the pinned WebGL showcase — those must not get
  *  a second full-viewport tile or the model sits on top of the glass card. */
+function mountOne(eng, mount) {
+  if (mount.dataset.mounted === "true") return;
+  mount.dataset.mounted = "true";
+  try {
+    eng.addTile(mount, mount.dataset.model, {
+      spin: parseFloat(mount.dataset.spin || "0.35"),
+      distance: parseFloat(mount.dataset.distance || "4.4"),
+      fov: parseFloat(mount.dataset.fov || "32"),
+      radius: parseFloat(mount.dataset.radius || "1"),
+    });
+  } catch (err) {
+    console.error("Tile failed", mount.dataset.model, err);
+    showFallback(mount);
+  }
+}
+
 export function mountProductTiles(root = document) {
   const mounts = root.querySelectorAll(".pcard__stage[data-model]");
   if (!mounts.length) return;
@@ -194,20 +210,20 @@ export function mountProductTiles(root = document) {
   }
 
   const eng = tileEngine();
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        io.unobserve(entry.target);
+        mountOne(eng, entry.target);
+      });
+    },
+    { rootMargin: "240px 0px", threshold: 0.01 }
+  );
+
   mounts.forEach((mount) => {
     if (mount.dataset.mounted === "true") return;
-    mount.dataset.mounted = "true";
-    try {
-      eng.addTile(mount, mount.dataset.model, {
-        spin: parseFloat(mount.dataset.spin || "0.35"),
-        distance: parseFloat(mount.dataset.distance || "4.4"),
-        fov: parseFloat(mount.dataset.fov || "32"),
-        radius: parseFloat(mount.dataset.radius || "1"),
-      });
-    } catch (err) {
-      console.error("Tile failed", mount.dataset.model, err);
-      showFallback(mount);
-    }
+    io.observe(mount);
   });
 }
 

@@ -23,23 +23,26 @@
   <section class="page-hero">
     <div class="page-hero__grid" aria-hidden="true"></div>
     <div class="shell">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
+      <nav class="breadcrumb" aria-label="Breadcrumb" data-reveal="fade">
         <a href="index.html">Home</a><span>/</span>
         <a href="oem.html">Capabilities</a><span>/</span>
         <span style="opacity:1;color:var(--fg)">Quality &amp; certification</span>
       </nav>
       <div class="page-hero__inner page-hero__inner--split">
         <div class="stack">
-          <p class="eyebrow">Audited, not asserted</p>
-          <h1 class="page-hero__title">Quality &amp;<br>certification</h1>
+          <p class="eyebrow" data-reveal="fade">Audited, not asserted</p>
+          <h1 class="page-hero__title">
+            <span class="split-line"><span>Quality &amp;</span></span>
+            <span class="split-line"><span>certification</span></span>
+          </h1>
         </div>
         <div class="stack">
-          <p class="lead">
+          <p class="lead" data-reveal style="--reveal-delay:.15s">
             Twelve live certifications, an in-house laboratory and a document pack
             that travels with the goods. Every certificate on this page can be
             emailed to you within the hour.
           </p>
-          <a class="btn btn--sm" href="contact.html">Request the certificate pack</a>
+          <a class="btn btn--sm" href="contact.html" data-reveal style="--reveal-delay:.28s">Request the certificate pack</a>
         </div>
       </div>
     </div>
@@ -54,7 +57,7 @@
         </h2>
       </div>
 
-      <div class="badges" data-cert-badges data-reveal>
+      <div class="badges" data-cert-badges>
         <!-- injected from data.js -->
       </div>
     </div>
@@ -103,38 +106,38 @@
         </p>
       </div>
 
-      <div class="featlist" data-reveal>
-        <div class="feat">
+      <div class="featlist">
+        <div class="feat" data-reveal data-reveal-group="pack">
           <span class="feat__mark">01</span>
           <span class="feat__title">EU Declaration of Conformity</span>
           <span class="feat__text">Signed per product family, listing the harmonised standards applied and the notified body where type-examination was required.</span>
         </div>
-        <div class="feat">
+        <div class="feat" data-reveal data-reveal-group="pack">
           <span class="feat__mark">02</span>
           <span class="feat__title">Test reports</span>
           <span class="feat__text">Batch results for the applicable physical and chemical tests, cross-referenced to the production lot number printed on the carton.</span>
         </div>
-        <div class="feat">
+        <div class="feat" data-reveal data-reveal-group="pack">
           <span class="feat__mark">03</span>
           <span class="feat__title">REACH SVHC statement</span>
           <span class="feat__text">Declaration against the current candidate list, refreshed each time ECHA updates it rather than annually.</span>
         </div>
-        <div class="feat">
+        <div class="feat" data-reveal data-reveal-group="pack">
           <span class="feat__mark">04</span>
           <span class="feat__title">GPSR technical file reference</span>
           <span class="feat__text">Traceability marking, risk assessment and the named EU responsible person under Regulation (EU) 2023/988.</span>
         </div>
-        <div class="feat">
+        <div class="feat" data-reveal data-reveal-group="pack">
           <span class="feat__mark">05</span>
           <span class="feat__title">EUDR due-diligence statement</span>
           <span class="feat__text">For leather and willow lines: geolocation of the production plot and a reference number under Regulation (EU) 2023/1115.</span>
         </div>
-        <div class="feat">
+        <div class="feat" data-reveal data-reveal-group="pack">
           <span class="feat__mark">06</span>
           <span class="feat__title">Statement on origin (REX)</span>
           <span class="feat__text">Registered exporter statement so your broker can claim GSP+ preferential duty at the point of entry.</span>
         </div>
-        <div class="feat">
+        <div class="feat" data-reveal data-reveal-group="pack">
           <span class="feat__mark">07</span>
           <span class="feat__title">Packing list &amp; container photos</span>
           <span class="feat__text">Carton-level manifest with a photographic record of loading and the seal number.</span>

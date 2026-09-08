@@ -81,7 +81,7 @@ const fallback = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 3);
 set("[data-p-related]", (related.length ? related : fallback)
   .map(
     (p) => `
-    <article class="pcard" data-reveal data-reveal-group="rel">
+    <article class="pcard">
       <div class="pcard__stage" data-model="${p.model}" data-distance="4.4">
         <span class="pcard__badge">${escape(p.badge)}</span>
       </div>

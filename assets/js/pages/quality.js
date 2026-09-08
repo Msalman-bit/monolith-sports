@@ -8,7 +8,7 @@ const escape = (s) =>
 const badges = document.querySelector("[data-cert-badges]");
 if (badges) {
   badges.innerHTML = CERTIFICATIONS.map(
-    (c) => `<div class="badge">
+    (c) => `<div class="badge" data-reveal data-reveal-group="cert">
       <span class="badge__name">${escape(c.name)}</span>
       <span class="badge__sub">${escape(c.sub)}</span>
     </div>`

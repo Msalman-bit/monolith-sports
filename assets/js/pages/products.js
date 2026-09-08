@@ -5,29 +5,51 @@ import { PRODUCTS, CATEGORIES, productsByCategory } from "../data.js";
 const escape = (s) =>
   String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function card(product) {
-  const specs = Object.entries(product.specs)
-    .slice(0, 2)
-    .map(([, value]) => `<span class="tag">${escape(value)}</span>`)
-    .join("");
+const FEATURED = [
+  "heritage-32",
+  "ace-tour-racket",
+  "guardian-batting-pad",
+  "apex-lite-shin",
+  "bastion-shin-guard",
+];
+
+const shot = (id) => `assets/img/products/${id}.jpg`;
+
+function stage(product, { eager = false } = {}) {
+  return `
+    <div class="pcard__stage" data-shot>
+      <img class="pcard__shot" src="${shot(product.id)}" alt="${escape(product.name)}" width="1400" height="1050" ${eager ? 'fetchpriority="high"' : ""} loading="${eager ? "eager" : "lazy"}" decoding="async">
+    </div>`;
+}
+
+function card(product, { featured = false, eager = false } = {}) {
+  const cat = CATEGORIES.find((c) => c.id === product.category);
+  const kicker = featured ? cat?.name || product.sku : product.sku;
 
   return `
-  <article class="pcard" data-reveal data-reveal-group="cat-${product.category}">
-    <div class="pcard__stage" data-model="${product.model}" data-distance="${product.model === "footballShinGuard" ? "3.8" : "4.4"}" data-radius="${product.model === "footballShinGuard" ? "1.15" : "1"}">
-      <span class="pcard__badge">${escape(product.badge)}</span>
-      <span class="pcard__spin">Hover to spin</span>
-    </div>
+  <article class="pcard pcard--photo">
+    ${stage(product, { eager })}
     <div class="pcard__body">
-      <span class="pcard__cat">${escape(product.sku)}</span>
+      <div class="pcard__meta">
+        <span class="pcard__cat">${escape(kicker)}</span>
+        <span class="pcard__badge">${escape(product.badge)}</span>
+      </div>
       <h3 class="pcard__name">${escape(product.name)}</h3>
       <p class="pcard__desc">${escape(product.blurb)}</p>
-      <div class="pcard__specs">${specs}</div>
       <div class="pcard__foot">
-        <span>MOQ ${product.moq} · ${escape(product.leadTime)}</span>
-        <a class="pcard__link" href="product.html?id=${product.id}">Detail →</a>
+        <span>MOQ ${product.moq}${featured ? "" : ` · ${escape(product.leadTime)}`}</span>
+        <a class="pcard__link" href="product.html?id=${product.id}">View spec</a>
       </div>
     </div>
   </article>`;
+}
+
+const featuredMount = document.querySelector("[data-featured]");
+if (featuredMount) {
+  featuredMount.innerHTML = FEATURED.map((id) => PRODUCTS.find((p) => p.id === id))
+    .filter(Boolean)
+    .map((p, i) => card(p, { featured: true, eager: i === 0 }))
+    .join("");
 }
 
 const filterMount = document.querySelector("[data-filters]");
@@ -60,7 +82,7 @@ if (sections) {
           <p class="body-lg" data-reveal>${escape(c.blurb)}</p>
         </div>
         <div class="grid grid-3">
-          ${productsByCategory(c.id).map(card).join("")}
+          ${productsByCategory(c.id).map((p) => card(p)).join("")}
         </div>
       </div>
     </section>`

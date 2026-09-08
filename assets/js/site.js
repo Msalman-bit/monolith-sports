@@ -152,8 +152,7 @@ function buildFooter() {
           <a href="contact.html">Contact</a>
           <a href="faq.html">Buyer FAQ</a>
           <span class="footer__heading" style="margin-top:1rem">Direct</span>
-          <a href="tel:${COMPANY.phoneHref}">${COMPANY.phone}</a>
-          <a href="mailto:${COMPANY.email}">${COMPANY.email}</a>
+          <a href="mailto:${COMPANY.salesEmail}">${COMPANY.salesEmail}</a>
         </div>
       </div>
 
@@ -287,7 +286,7 @@ function liquidGlassDefs() {
 }
 
 const GLASS_SEL =
-  ".btn, .nav__link, .nav__hit, .filter, .icon-btn, .chip span, .nav__sub, .nav__panel, .socials a, .marquee, .stat, .pcard, .scrollstep__card, .newsletter, .tag, .pcard__badge, .acc__head, .route, .cta, .card:not(.card--bare), .badge, .header, .hero__title, .hero__meta .lead";
+  ".btn, .nav__link, .nav__hit, .filter, .icon-btn, .chip span, .nav__sub, .nav__panel, .socials a, .marquee, .stat, .pcard:not(.pcard--photo), .scrollstep__card, .newsletter, .tag, .pcard:not(.pcard--photo) .pcard__badge, .acc__head, .route, .cta, .card:not(.card--bare), .badge, .header, .hero__title, .hero__meta .lead";
 
 function unwrapLegacyGlass(el) {
   const fx = el.querySelector(":scope > .lg-fx");
@@ -395,10 +394,21 @@ function initNav() {
       const item = btn.closest(".nav__item");
       const willOpen = !item.classList.contains("is-open");
       closeMenus();
+      $$(".nav__item.is-held").forEach((el) => el.classList.remove("is-held"));
       if (willOpen) {
         item.classList.add("is-open");
         btn.setAttribute("aria-expanded", "true");
       }
+    });
+  });
+
+  $$(".nav__panel a").forEach((link) => {
+    link.addEventListener("click", () => {
+      const item = link.closest(".nav__item");
+      closeMenus();
+      item?.classList.add("is-held");
+      item?.addEventListener("pointerleave", () => item.classList.remove("is-held"), { once: true });
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     });
   });
 
@@ -473,34 +483,88 @@ function initNav() {
 
 /* ---------------------------------------------------------------- Reveals */
 function initReveals() {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const items = $$("[data-reveal]");
-  if (!items.length) return;
+  const livePage = Boolean(document.getElementById("certificates"));
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        observer.unobserve(entry.target);
-      });
-    },
-    { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
-  );
+  if (items.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "80px 0px 25% 0px", threshold: 0.01 }
+    );
 
-  items.forEach((el) => {
-    // Stagger siblings that share a container.
-    const group = el.dataset.revealGroup;
-    if (group) {
-      const siblings = $$(`[data-reveal-group="${group}"]`);
-      el.style.setProperty("--reveal-delay", `${siblings.indexOf(el) * 0.07}s`);
+    const live = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle("is-in", entry.isIntersecting);
+        });
+      },
+      { rootMargin: "-8% 0px 0px 0px", threshold: 0.08 }
+    );
+
+    const fold = window.innerHeight * 0.98;
+    items.forEach((el) => {
+      const group = el.dataset.revealGroup;
+      if (reduce) {
+        el.classList.add("is-in");
+        return;
+      }
+      const step = group === "cert" || group === "pack" ? 0.05 : 0.07;
+      if (group) {
+        const siblings = $$(`[data-reveal-group="${group}"]`);
+        const i = siblings.indexOf(el);
+        const last = siblings.length - 1;
+        el.style.setProperty("--reveal-delay", `${i * step}s`);
+        el.style.setProperty("--reveal-out-delay", `${(last - i) * step}s`);
+      }
+      if (livePage) {
+        live.observe(el);
+        return;
+      }
+      if (el.getBoundingClientRect().top < fold) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => el.classList.add("is-in"));
+        });
+        return;
+      }
+      observer.observe(el);
+    });
+  }
+
+  // Titles: reverse on leave, replay whenever you scroll back.
+  $$(".hero__title, .page-hero__title").forEach((title) => {
+    const lines = $$(".split-line", title);
+    if (!lines.length) return;
+    const last = lines.length - 1;
+    lines.forEach((line, i) => {
+      line.style.setProperty("--line-delay", `${i * 0.08}s`);
+      line.style.setProperty("--line-out-delay", `${(last - i) * 0.08}s`);
+    });
+    if (reduce) {
+      title.classList.add("is-in");
+      return;
     }
-    observer.observe(el);
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          title.classList.toggle("is-in", entry.isIntersecting);
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.15 }
+    );
+    io.observe(title);
   });
 
-  // Line-by-line headline reveals. These are observed in their own right —
-  // a .split-line inside a heading that carries no [data-reveal] would
-  // otherwise never be told to slide in, and would stay hidden for good.
-  const lines = $$(".split-line");
+  // One-shot line reveals on other pages (e.g. 404).
+  const lines = $$(".split-line").filter(
+    (line) => !line.closest(".hero__title, .page-hero__title")
+  );
   if (lines.length) {
     const lineObserver = new IntersectionObserver(
       (entries) => {
@@ -517,6 +581,33 @@ function initReveals() {
       lineObserver.observe(line);
     });
   }
+}
+
+function initShotReveals() {
+  const stages = $$("[data-shot]");
+  if (!stages.length) return;
+
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  stages.forEach((stage) => {
+    const card = stage.closest(".pcard");
+    const grid = stage.closest(".grid");
+    if (grid && card) {
+      const i = [...grid.children].indexOf(card);
+      stage.style.setProperty("--shot-delay", `${(Math.max(0, i) % 3) * 0.12}s`);
+    }
+    if (reduce) stage.classList.add("is-in");
+  });
+  if (reduce) return;
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("is-in", entry.isIntersecting);
+      });
+    },
+    { rootMargin: "0px 0px -8% 0px", threshold: 0.18 }
+  );
+  stages.forEach((stage) => io.observe(stage));
 }
 
 /* --------------------------------------------------------------- Counters */
@@ -768,13 +859,13 @@ function initForms() {
 
     const setCenter = () => {
       if (!button || form.classList.contains("is-docked")) return;
-      button.style.setProperty("transform", "none", "important");
-      void button.offsetWidth;
-      const dest = button.getBoundingClientRect();
-      button.style.removeProperty("transform");
-      if (!dest.width) return;
-      const dx = window.innerWidth / 2 - (dest.left + dest.width / 2);
-      button.style.setProperty("--nl-center", `${Math.round(dx)}px`);
+      const width = button.offsetWidth;
+      if (!width) return;
+      const formRect = form.getBoundingClientRect();
+      const pad = parseFloat(getComputedStyle(form).getPropertyValue("--nl-pad")) || 5;
+      const dockedCenter = formRect.right - pad - width / 2;
+      const origin = formRect.left + formRect.width / 2;
+      button.style.setProperty("--nl-center", `${Math.round(origin - dockedCenter)}px`);
     };
 
     const engaged = () =>
@@ -789,7 +880,7 @@ function initForms() {
       showCenter();
       if (form.classList.contains("is-docked")) return;
       window.clearTimeout(holdTimer);
-      holdTimer = window.setTimeout(() => form.classList.add("is-docked"), reduce ? 0 : 320);
+      holdTimer = window.setTimeout(() => form.classList.add("is-docked"), reduce ? 0 : 220);
     };
 
     const undock = () => {
@@ -891,7 +982,7 @@ function initCatDock() {
       el.classList.add("is-ready");
       if (el.classList.contains("is-docked")) return;
       window.clearTimeout(holdTimer);
-      holdTimer = window.setTimeout(() => el.classList.add("is-docked"), reduce ? 0 : 280);
+      holdTimer = window.setTimeout(() => el.classList.add("is-docked"), reduce ? 0 : 220);
     };
 
     const undock = () => {
@@ -1097,32 +1188,42 @@ async function initGraphics() {
   if (!needsTiles && !heroMount && !showcase && !viewerMount) return;
 
   try {
-    const { preloadModels } = await import("./lib/models.js");
-    await preloadModels();
+    const modelsReady = import("./lib/models.js").then((m) => m.preloadModels());
+    const afterModels = (fn) => modelsReady.then(fn);
+    const jobs = [];
 
     if (heroMount) {
-      const { initHero } = await import("./scenes/hero.js");
-      initHero(heroMount);
+      jobs.push(
+        afterModels(() => import("./scenes/hero.js").then((m) => m.initHero(heroMount)))
+      );
     }
     if (showcase) {
-      const { initShowcase } = await import("./scenes/showcase.js");
-      initShowcase(showcase);
+      jobs.push(
+        afterModels(() =>
+          import("./scenes/showcase.js").then((m) => m.initShowcase(showcase))
+        )
+      );
     }
     if (viewerMount) {
-      const { initViewer } = await import("./scenes/viewer.js");
-      const viewer = initViewer(viewerMount, viewerMount.dataset.viewer, {
-        distance: parseFloat(viewerMount.dataset.distance || "4.6"),
-      });
-      $("[data-viewer-reset]")?.addEventListener("click", () => viewer?.reset());
-      $("[data-viewer-spin]")?.addEventListener("click", (e) => {
-        const spinning = viewer?.toggleSpin();
-        e.currentTarget.setAttribute("aria-pressed", String(spinning));
-      });
+      jobs.push(
+        afterModels(async () => {
+          const { initViewer } = await import("./scenes/viewer.js");
+          const viewer = initViewer(viewerMount, viewerMount.dataset.viewer, {
+            distance: parseFloat(viewerMount.dataset.distance || "4.6"),
+          });
+          $("[data-viewer-reset]")?.addEventListener("click", () => viewer?.reset());
+          $("[data-viewer-spin]")?.addEventListener("click", (e) => {
+            const spinning = viewer?.toggleSpin();
+            e.currentTarget.setAttribute("aria-pressed", String(spinning));
+          });
+        })
+      );
     }
     if (needsTiles) {
-      const { mountProductTiles } = await import("./scenes/tiles.js");
-      mountProductTiles();
+      jobs.push(import("./scenes/tiles.js").then((m) => m.mountProductTiles()));
     }
+
+    await Promise.all(jobs);
   } catch (err) {
     console.error("3D initialisation failed", err);
   }
@@ -1135,6 +1236,7 @@ function boot() {
   initTheme();
   initNav();
   initReveals();
+  initShotReveals();
   initCounters();
   initAccordions();
   initMarquees();
