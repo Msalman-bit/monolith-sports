@@ -1129,7 +1129,18 @@ async function initGraphics() {
 }
 
 /* ------------------------------------------------------------------- Boot */
+let booted = false;
+
+function jumpToHash() {
+  const id = decodeURIComponent(location.hash.replace(/^#/, ""));
+  if (!id) return;
+  document.getElementById(id)?.scrollIntoView();
+}
+
 function boot() {
+  if (booted) return;
+  booted = true;
+
   injectChrome();
   initLiquidGlass();
   initTheme();
@@ -1145,10 +1156,18 @@ function boot() {
   initCredit();
   initPreloader();
   initGraphics();
+  jumpToHash();
 }
 
+// Page modules (products.js, product.js, quote.js, quality.js) import data.js.
+// In the production bundle that shared chunk also contains this file, so a
+// synchronous boot() here would run before those modules inject filters,
+// catalogue sections, and [data-viewer] — leaving the catalogue unfilterable
+// and the product viewer never mounting. Defer until the current module graph
+// finishes. Module scripts are deferred, so readyState is already "interactive"
+// by the time we get here; the loading branch is for a classic script tag.
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", boot);
 } else {
-  boot();
+  queueMicrotask(boot);
 }
