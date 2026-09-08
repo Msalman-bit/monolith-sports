@@ -1270,5 +1270,7 @@ function boot() {
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", boot);
 } else {
-  boot();
+  // Module graphs evaluate shared chunks before the page script body.
+  // Yield so catalogue inject (products.js, quality.js) can run first.
+  queueMicrotask(boot);
 }
