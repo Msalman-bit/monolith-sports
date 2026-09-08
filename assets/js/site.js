@@ -387,16 +387,6 @@ function initNav() {
     });
   };
 
-  $$(".nav__hit .nav__link").forEach((link) => {
-    link.addEventListener("click", (e) => {
-      const more = link.closest(".nav__item")?.querySelector(".nav__more");
-      if (!more) return;
-      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-      e.preventDefault();
-      more.click();
-    });
-  });
-
   $$(".nav__more").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -594,38 +584,29 @@ function initReveals() {
 }
 
 function initShotReveals() {
-  const stages = $$("[data-shot]");
-  if (!stages.length) return;
+  const bound = new WeakSet();
 
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  stages.forEach((stage) => {
+  const bind = (stage) => {
+    if (bound.has(stage)) return;
+    bound.add(stage);
     const card = stage.closest(".pcard");
     const grid = stage.closest(".grid");
     if (grid && card) {
       const i = [...grid.children].indexOf(card);
       stage.style.setProperty("--shot-delay", `${(Math.max(0, i) % 3) * 0.12}s`);
     }
-    if (reduce) stage.classList.add("is-in");
-  });
-  if (reduce) return;
+    stage.classList.add("is-in");
+  };
 
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        entry.target.classList.toggle("is-in", entry.isIntersecting);
-      });
-    },
-    { rootMargin: "120px 0px 20% 0px", threshold: 0.01 }
-  );
-  const fold = window.innerHeight * 0.98;
-  stages.forEach((stage) => {
-    io.observe(stage);
-    if (stage.getBoundingClientRect().top < fold) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => stage.classList.add("is-in"));
-      });
-    }
-  });
+  const scan = () => $$("[data-shot]").forEach(bind);
+  scan();
+
+  const roots = ["[data-featured]", "[data-category-sections]"]
+    .map((sel) => document.querySelector(sel))
+    .filter(Boolean);
+  if (!roots.length) return;
+  const mo = new MutationObserver(scan);
+  roots.forEach((root) => mo.observe(root, { childList: true, subtree: true }));
 }
 
 /* --------------------------------------------------------------- Counters */
