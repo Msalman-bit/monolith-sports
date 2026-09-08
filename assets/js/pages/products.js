@@ -13,7 +13,14 @@ const FEATURED = [
   "bastion-shin-guard",
 ];
 
-const shot = (id) => `assets/img/products/${id}.jpg`;
+const SHOTS = import.meta.glob("../../img/products/*.jpg", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
+const shot = (id) =>
+  SHOTS[`../../img/products/${id}.jpg`] || `assets/img/products/${id}.jpg`;
 
 function stage(product, { eager = false } = {}) {
   return `
