@@ -387,6 +387,16 @@ function initNav() {
     });
   };
 
+  $$(".nav__hit .nav__link").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const more = link.closest(".nav__item")?.querySelector(".nav__more");
+      if (!more) return;
+      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      e.preventDefault();
+      more.click();
+    });
+  });
+
   $$(".nav__more").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -605,9 +615,17 @@ function initShotReveals() {
         entry.target.classList.toggle("is-in", entry.isIntersecting);
       });
     },
-    { rootMargin: "0px 0px -8% 0px", threshold: 0.18 }
+    { rootMargin: "120px 0px 20% 0px", threshold: 0.01 }
   );
-  stages.forEach((stage) => io.observe(stage));
+  const fold = window.innerHeight * 0.98;
+  stages.forEach((stage) => {
+    io.observe(stage);
+    if (stage.getBoundingClientRect().top < fold) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => stage.classList.add("is-in"));
+      });
+    }
+  });
 }
 
 /* --------------------------------------------------------------- Counters */
